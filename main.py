@@ -1,6 +1,8 @@
 import pygame;
 from constants import *;
-from player import *;
+from player import Player;
+from asteroid import Asteroid;
+from asteroidfield import AsteroidField;
 
 def main():
     print("Starting Asteroids!");
@@ -12,9 +14,20 @@ def main():
     pyClock = pygame.time.Clock();
     deltaTime = 0;
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT));
+    
+    # Groups
+    updatableGroup = pygame.sprite.Group();
+    drawableGroup = pygame.sprite.Group();
+    asteroidGroup = pygame.sprite.Group();
 
-    # Game Objects
+    # Player
+    Player.containers = (updatableGroup, drawableGroup);
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+
+    # Asteroids
+    Asteroid.containers = (asteroidGroup, updatableGroup, drawableGroup);
+    AsteroidField.containers = (updatableGroup);
+    asteroidField = AsteroidField();
 
     while (True):
         
@@ -23,8 +36,15 @@ def main():
                 return;
 
         screen.fill((0,0,0));
-
-        player.draw(screen);
+        
+        updatableGroup.update(deltaTime);
+        for drawable in drawableGroup:
+            drawable.draw(screen);
+        
+        for asteroid in asteroidGroup:
+            if (player.check_colision(asteroid)):
+                print("Game Over!");
+                return;
 
         pygame.display.flip();
         deltaTime = pyClock.tick(60) / 1000;
