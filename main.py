@@ -49,6 +49,11 @@ def main():
                 print("Game Over!");
                 return;
 
+            for bullet in bulletGroup:
+                if (asteroid.check_colision(bullet)):
+                    asteroid.split();
+                    bullet.kill();
+
         pygame.display.flip();
         deltaTime = pyClock.tick(60) / 1000;
 
